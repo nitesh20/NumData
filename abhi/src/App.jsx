@@ -79,29 +79,30 @@ const filtered = (() => {
   if (!q) return numbers;
 
   const terms = q.split(",").map((t) => t.trim()).filter(Boolean);
-  const result = [];
 
-  for (const term of terms) {
-    const searchNum = parseFloat(term);
+  // Single term: exact match + next 8
+  if (terms.length === 1) {
+    const searchNum = parseFloat(terms[0]);
+    const exactIndex = numbers.findIndex((n) => parseFloat(n.value) === searchNum);
+    if (exactIndex === -1) return [];
+    return numbers.slice(exactIndex, exactIndex + 9);
+  }
 
-    if (!isNaN(searchNum)) {
-      // Find exact match index first
-      const exactIndex = numbers.findIndex((n) => parseFloat(n.value) === searchNum);
-      if (exactIndex !== -1) {
-        // Take exact match + next 8 numbers from that position
-        const slice = numbers.slice(exactIndex, exactIndex + 9);
-        for (const item of slice) {
-          if (!result.find((r) => r.id === item.id)) result.push(item);
-        }
-      }
-    } else {
-      // Non-numeric: exact string match only
-      const match = numbers.find((n) => n.value === term);
-      if (match && !result.find((r) => r.id === match.id)) result.push(match);
+  // Multiple terms: find exact consecutive sequence in stored list
+  for (let i = 0; i <= numbers.length - terms.length; i++) {
+    const match = terms.every((term, j) => {
+      const searchNum = parseFloat(term);
+      const storedNum = parseFloat(numbers[i + j].value);
+      return !isNaN(searchNum) && !isNaN(storedNum) && searchNum === storedNum;
+    });
+
+    if (match) {
+      // Sequence found — return matched sequence + next 8
+      return numbers.slice(i, i + terms.length + 8);
     }
   }
 
-  return result;
+  return []; // sequence not found
 })();
 
   return (

@@ -74,16 +74,22 @@ export default function App() {
     }
   };
 
-  const filtered = numbers.filter((n) => {
-    const q = search.trim();
-    if (!q) return true;
-    const searchNum = parseFloat(q);
+  cconst filtered = numbers.filter((n) => {
+  const q = search.trim();
+  if (!q) return true;
+
+  // Comma-separated: "5, 20, 100" → check each term
+  const terms = q.split(",").map((t) => t.trim()).filter(Boolean);
+
+  return terms.some((term) => {
+    const searchNum = parseFloat(term);
     const storedNum = parseFloat(n.value);
     if (!isNaN(searchNum) && !isNaN(storedNum)) {
       return storedNum >= searchNum && storedNum <= searchNum + 10;
     }
-    return n.value.includes(q);
+    return n.value.includes(term);
   });
+});
 
   return (
     <div className="app">

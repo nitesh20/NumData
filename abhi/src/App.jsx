@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
 // Switch between local and production
-const API = "https://unknown-59ah.vercel.app/api";
+const API = "https://num-data.vercel.app/api";
 
 export default function App() {
   const [inputValue, setInputValue] = useState("");

@@ -15,10 +15,7 @@ async function getCollection() {
 }
 
 const ALLOWED_ORIGINS = [
-  "https://unknown-navy-two.vercel.app",
-  "https://unknown-59ah.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:3000",
+process.env.ALLOWED_ORIGINS ,
 ];
 
 function setCors(req, res) {

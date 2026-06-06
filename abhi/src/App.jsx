@@ -74,22 +74,35 @@ export default function App() {
     }
   };
 
-  cconst filtered = numbers.filter((n) => {
+const filtered = (() => {
   const q = search.trim();
-  if (!q) return true;
+  if (!q) return numbers;
 
-  // Comma-separated: "5, 20, 100" → check each term
   const terms = q.split(",").map((t) => t.trim()).filter(Boolean);
+  const result = [];
 
-  return terms.some((term) => {
+  for (const term of terms) {
     const searchNum = parseFloat(term);
-    const storedNum = parseFloat(n.value);
-    if (!isNaN(searchNum) && !isNaN(storedNum)) {
-      return storedNum >= searchNum && storedNum <= searchNum + 10;
+
+    if (!isNaN(searchNum)) {
+      // Find exact match index first
+      const exactIndex = numbers.findIndex((n) => parseFloat(n.value) === searchNum);
+      if (exactIndex !== -1) {
+        // Take exact match + next 8 numbers from that position
+        const slice = numbers.slice(exactIndex, exactIndex + 9);
+        for (const item of slice) {
+          if (!result.find((r) => r.id === item.id)) result.push(item);
+        }
+      }
+    } else {
+      // Non-numeric: exact string match only
+      const match = numbers.find((n) => n.value === term);
+      if (match && !result.find((r) => r.id === match.id)) result.push(match);
     }
-    return n.value.includes(term);
-  });
-});
+  }
+
+  return result;
+})();
 
   return (
     <div className="app">
